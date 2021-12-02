@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/userfront/example-aws-api-gateway#readme",
   "dependencies": {
+    "aws-xray-sdk": "^3.3.4",
     "jsonwebtoken": "^8.5.1"
   }
 }
