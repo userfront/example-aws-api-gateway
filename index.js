@@ -11,12 +11,12 @@ RqesE10ysVdGxeyeRpyFltEfF5QWAzn99wIDAQAB
 
 // This handler validates the token
 exports.handler = (event, context, callback) => {
-  if (!event.accessToken) {
+  if (!event.authorizationToken) {
     return callback("Unauthorized");
   }
 
-  // Remove "Bearer" from the access token header if it is present
-  const accessToken = event.accessToken.replace(/^Bearer /, "");
+  // Remove "Bearer" from the AWS "authorizer" token if it is present
+  const accessToken = event.authorizationToken.replace(/^Bearer /, "");
 
   // Verify the JWT access token
   jwt.verify(
