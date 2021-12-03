@@ -6,6 +6,18 @@ This example shows how to use Userfront for access control with AWS API Gateway.
 
 1. Create a Lambda function to use as an Authorizer
 
+Generate a zip file:
+
+```sh
+zip -r function.zip .
+```
+
+Deploy with
+
+```sh
+aws lambda update-function-code --function-name userfront-authorizer --zip-file fileb://function.zip
+```
+
 2. Add the Authorizer to your API Gateway
 
 ![AWS API Gateway Authorizer](https://res.cloudinary.com/component/image/upload/v1638503733/guide/examples/aws-api-gateway-authorizer.png)
