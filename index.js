@@ -11,6 +11,7 @@ RqesE10ysVdGxeyeRpyFltEfF5QWAzn99wIDAQAB
 
 // This handler validates the token
 exports.handler = (event, context, callback) => {
+  // AWS maps the Authorization header to event.authorizationToken
   if (!event.authorizationToken) {
     return callback("Unauthorized");
   }
