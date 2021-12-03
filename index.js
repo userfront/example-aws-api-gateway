@@ -11,24 +11,41 @@ RqesE10ysVdGxeyeRpyFltEfF5QWAzn99wIDAQAB
 
 // This handler validates the token
 exports.handler = (event, context, callback) => {
-  console.log(`Run ${Math.random()}`);
-  if (!event.authorizationToken) {
+  if (!event.accessToken) {
     return callback("Unauthorized");
   }
-  const accessToken = event.authorizationToken.replace(/^Bearer /, "");
-  console.log(`Token:${accessToken}`);
 
+  // Remove "Bearer" from the access token header if it is present
+  const accessToken = event.accessToken.replace(/^Bearer /, "");
+
+  // Verify the JWT access token
   jwt.verify(
     accessToken,
     jwtPublicKey,
     { algorithms: ["RS256"] },
     (error, decoded) => {
-      console.log(error);
       if (error) {
         callback("Unauthorized");
       } else {
-        callback(null, decoded);
+        callback(null, generatePolicy(event.methodArn));
       }
     }
   );
 };
+
+// Helper function to generate an AWS IAM policy
+function generatePolicy(resource) {
+  return {
+    principalId: "user",
+    policyDocument: {
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Action: "execute-api:Invoke",
+          Effect: "Allow",
+          Resource: resource,
+        },
+      ],
+    },
+  };
+}
