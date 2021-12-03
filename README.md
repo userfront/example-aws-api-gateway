@@ -37,13 +37,15 @@ RqesE10ysVdGxeyeRpyFltEfF5QWAzn99wIDAQAB
 -----END RSA PUBLIC KEY-----
 ```
 
+#### Upload your code to your AWS Lambda function
+
 Generate a zip file to upload to AWS:
 
 ```
 zip -r function.zip .
 ```
 
-Upload the zip file:
+Upload the zip file through the AWS Lambda dashboard, or use the following terminal command:
 
 ```
 aws lambda update-function-code --function-name userfront-authorizer --zip-file fileb://function.zip
@@ -51,19 +53,30 @@ aws lambda update-function-code --function-name userfront-authorizer --zip-file 
 
 You should be able to see that your code was uploaded when you visit the Lambda function in the AWS dashboard.
 
+If you have problems uploading your code, see the AWS instructions [here](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-package.html).
+
 ### 2. Add the Authorizer to your API Gateway
 
 In your [AWS API Gateway dashboard](https://console.aws.amazon.com/apigateway/main/apis), select your API Gateway.
 
 In the side menu select `Authorizers` > `Create new authorizer`.
 
-Create a Lambda authorizer named `Userfront`, and select your Lambda function. Finally select `Token` for the Lambda Event Payload and the `Authorization` header for the Token Source.
+Create a Lambda authorizer:
 
-![AWS API Gateway Authorizer](https://res.cloudinary.com/component/image/upload/v1638503733/guide/examples/aws-api-gateway-authorizer.png)
+- Name: `Userfront`
+- Type: `Lambda`
+- Lambda Function: `userfront-authorizer`
+- Lambda Event Payload: `Token`
+- Token Source: `Authorization`
+- Authorization Caching: `unchecked`
 
-Select `Save` to create the authorizer.
+![AWS API Gateway Authorizer](https://res.cloudinary.com/component/image/upload/v1638550448/guide/examples/aws-api-gateway-authorizer.png)
 
-Now visit `Resources` in the sidebar and select a resource and method. In the dialog shown, select `Userfront` as the Authorization method.
+Select `Create` to create the authorizer.
+
+Now visit `Resources` in the sidebar and select a resource and method, then click `Method Request`.
+
+In the dialog shown, select `Userfront` as the Authorization method. (You may need to reload the page for it to show)
 
 ![AWS API Gateway Resource](https://res.cloudinary.com/component/image/upload/v1638503733/guide/examples/aws-api-gateway-resource.png)
 
@@ -71,7 +84,18 @@ Now select `Actions` > `Deploy API` from the dropdown.
 
 ### 3. Test that your Authorizer is working
 
-Now you should be able to test your endpoint with a request like:
+Now you should be able to test your endpoint with a request that has a valid JWT access token.
+
+#### Obtain a JWT access token
+
+You can obtain a JWT access token one of the following ways:
+
+- Logging into your own application and copying the cookie named `access.<tenantId>`
+- Make a [login API request](https://userfront.com/docs/api-client.html#log-in-with-password) with a tool like Postman. For live mode, you must also include a live `origin` header as described [here](https://userfront.com/guide/test-mode.html#activate-live-mode).
+
+#### Call your endpoint
+
+Try calling your endpoint with a JWT access token in the `Authorization` header:
 
 ```
 GET https://<your-aws-api-gateway-url>/userfront-example
@@ -83,6 +107,18 @@ GET https://<your-aws-api-gateway-url>/userfront-example
 }
 ```
 
+Your endpoint should now allow requests with a valid JWT access token, and reject requests without a valid JWT access token.
+
 #### Troubleshooting
 
-- Make sure that your access token and public key are both in the same mode (live or test).
+If your setup is not working, you may want to check the following
+
+##### Userfront
+
+- Verify that your JWT access token and JWT public key are both in the same mode (live or test)
+
+##### AWS
+
+- Verify that the latest AWS API Gateway settings are deployed
+- Verify that the latest code is deployed to your Lambda function
+- Verify that your Authorizer settings have `Authorization Caching` unchecked
