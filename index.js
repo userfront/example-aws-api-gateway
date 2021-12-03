@@ -9,7 +9,16 @@ aWy+i4YieTRRKnbyT7fzDPiZupkcg2jwVF49CtyB9UWtE/+/BAKtJtBLfdZ5X1dK
 RqesE10ysVdGxeyeRpyFltEfF5QWAzn99wIDAQAB
 -----END RSA PUBLIC KEY-----`;
 
-// This handler validates the token
+/**
+ * This handler reads the event.authorizationToken provided by AWS,
+ * removes "Bearer " from the front if present, and uses the JWT
+ * public key to verify the token.
+ *
+ * @param {Object} event
+ * @param {Object} context
+ * @param {Function} callback
+ * @returns
+ */
 exports.handler = (event, context, callback) => {
   // AWS maps the Authorization header to event.authorizationToken
   if (!event.authorizationToken) {
