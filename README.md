@@ -1,3 +1,7 @@
+> **This repository has moved.** Please see [@userfront/examples/aws-api-gateway](https://github.com/userfront/examples/tree/main/aws-api-gateway).
+
+---
+
 # Userfront AWS API Gateway example
 
 This example shows how to use Userfront for access control with an AWS API Gateway.
